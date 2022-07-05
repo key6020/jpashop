@@ -14,10 +14,11 @@ import java.util.List;
 public class MemberService {
 
 
-//    @Autowired // field injection (cf. setter injection, constructor injection)
+    //    @Autowired // field injection (cf. setter injection, constructor injection)
     private final MemberRepository memberRepository;
 
-    /** join
+    /**
+     * join
      *
      * @param member
      * @return
@@ -38,7 +39,7 @@ public class MemberService {
     private void validateDuplicateMember(Member member) {
         // OR count members -> if not 0
         List<Member> findMembers = memberRepository.findByName(member.getName()); // name -> unique key
-        if(!findMembers.isEmpty()) {
+        if (!findMembers.isEmpty()) {
             throw new IllegalStateException("Already Exists.");
         }
     }
@@ -60,5 +61,14 @@ public class MemberService {
      */
     public Member findOne(Long memberId) {
         return memberRepository.findOne(memberId);
+    }
+
+    /**
+     * 회원 정보 수정
+     */
+    @Transactional
+    public void update(Long id, String name) {
+        Member member = memberRepository.findOne(id);
+        member.setName(name);
     }
 }
