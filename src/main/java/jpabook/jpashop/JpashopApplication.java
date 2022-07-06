@@ -6,7 +6,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class JpashopApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(JpashopApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(JpashopApplication.class, args);
+    }
+
+    /**
+     * NOT RECOMMENDED
+     *     // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-hibernate5
+     *     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
+     */
+//    @Bean
+//    Hibernate5Module hibernate5Module() {
+//        Hibernate5Module hibernate5Module = new Hibernate5Module();
+////        hibernate5Module.configure(Hibernate5Module.Feature.FORCE_LAZY_LOADING, true);
+//        return hibernate5Module;
+//    }
 }

@@ -1,6 +1,7 @@
 package jpabook.jpashop.repository;
 
 import jpabook.jpashop.domain.Order;
+import jpabook.jpashop.dto.SimpleOrderDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -45,8 +46,8 @@ public class OrderRepository {
         boolean isFirstCondition = true;
 
         // Order Status Search
-        if(orderSearch.getOrderStatus() != null) {
-            if(isFirstCondition) {
+        if (orderSearch.getOrderStatus() != null) {
+            if (isFirstCondition) {
                 jpql += " where";
                 isFirstCondition = false;
             } else {
@@ -56,8 +57,8 @@ public class OrderRepository {
         }
 
         // Member Name Search
-        if(StringUtils.hasText(orderSearch.getMemberName())) {
-            if(isFirstCondition) {
+        if (StringUtils.hasText(orderSearch.getMemberName())) {
+            if (isFirstCondition) {
                 jpql += " where";
                 isFirstCondition = false;
             } else {
@@ -67,12 +68,12 @@ public class OrderRepository {
         }
 
         TypedQuery<Order> query = em.createQuery(jpql, Order.class)
-            .setMaxResults(1000);
+                .setMaxResults(1000);
 
-        if(orderSearch.getOrderStatus() != null) {
+        if (orderSearch.getOrderStatus() != null) {
             query = query.setParameter("orderStatus", orderSearch.getOrderStatus());
         }
-        if(StringUtils.hasText(orderSearch.getMemberName())) {
+        if (StringUtils.hasText(orderSearch.getMemberName())) {
             query = query.setParameter("name", orderSearch.getMemberName());
         }
 
@@ -82,7 +83,7 @@ public class OrderRepository {
 
     /**
      * 2. JPA Criteria
-     *    단점 : 유지보수 어려움
+     * 단점 : 유지보수 어려움
      */
     public List<Order> findAllByCriteria(OrderSearch orderSearch) {
 
@@ -94,13 +95,13 @@ public class OrderRepository {
         List<Predicate> criteria = new ArrayList<>();
 
         // Order Status Search
-        if(orderSearch.getOrderStatus() != null) {
+        if (orderSearch.getOrderStatus() != null) {
             Predicate status = cb.equal(o.get("orderStatus"), orderSearch.getOrderStatus());
             criteria.add(status);
         }
 
         // Member Name Search
-        if(StringUtils.hasText(orderSearch.getMemberName())) {
+        if (StringUtils.hasText(orderSearch.getMemberName())) {
             Predicate name = cb.like(o.get("name"), "%" + orderSearch.getMemberName() + "%");
             criteria.add(name);
         }
@@ -111,10 +112,17 @@ public class OrderRepository {
         return query.getResultList();
     }
 
-//    /**
-//     * 3. QueryDSL (Dynamic Query에 강점)
-//     */
-//    public List<Order> findAllByQueryDSL() {
-//
-//    }
+    public List<Order> findAllWithMemberAndDelivery() {
+        return em.createQuery("select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class)
+                .getResultList();
+    }
+
+    public List<SimpleOrderDto> findAllSimpleOrderDto() {
+        return em.createQuery("select new jpabook.jpashop.dto.SimpleOrderDto(o.id, m.name, o.orderDate, o.orderStatus, d.address) from Order o" +
+                        " join o.member m" +
+                        " join o.delivery d", SimpleOrderDto.class)
+                .getResultList();
+    }
 }

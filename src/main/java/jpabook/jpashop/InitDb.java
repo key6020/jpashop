@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
 @Component
@@ -15,11 +14,11 @@ public class InitDb {
 
     private final InitService initService;
 
-    @PostConstruct
-    public void init() {
-        initService.initDb();
-        initService.initDb2();
-    }
+//    @PostConstruct
+//    public void init() {
+//        initService.initDb();
+//        initService.initDb2();
+//    }
 
     @Component
     @RequiredArgsConstructor
