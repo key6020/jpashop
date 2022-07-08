@@ -1,5 +1,6 @@
 package jpabook.jpashop.repository.query;
 
+import jpabook.jpashop.dto.OrderFlatDto;
 import jpabook.jpashop.dto.OrderItemQueryDto;
 import jpabook.jpashop.dto.OrderQueryDto;
 import jpabook.jpashop.dto.SimpleOrderDto;
@@ -56,6 +57,17 @@ public class QueryRepository {
         orders.forEach(o -> o.setOrderItems(orderItemMap.get(o.getOrderId())));
 
         return orders;
+    }
+
+    public List<OrderFlatDto> findAllOrderCollectionDtoOptimizedFlat() {
+        // total query = 1
+        return em.createQuery("select new jpabook.jpashop.dto.OrderFlatDto(o.id, m.name, o.orderDate, o.orderStatus, d.address, i.name, oi.orderPrice, oi.count) " +
+                        " from Order o" +
+                        " join o.member m" +
+                        " join o.delivery d" +
+                        " join o.orderItems oi" +
+                        " join oi.item i", OrderFlatDto.class)
+                .getResultList();
     }
 
     private List<OrderItemQueryDto> findOrderItems(Long orderId) {
