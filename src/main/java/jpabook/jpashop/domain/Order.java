@@ -12,11 +12,13 @@ import java.util.List;
 
 @Entity
 @Table(name = "orders")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "order_id")
     private Long id;
 
@@ -25,6 +27,7 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    //    @BatchSize(100)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -68,21 +71,23 @@ public class Order {
     }
 
     // Business Logic in Entity
+
     /**
      * Cancel Order
      */
     public void cancel() {
-        if(delivery.getDeliveryStatus() == DeliveryStatus.COMP) {
+        if (delivery.getDeliveryStatus() == DeliveryStatus.COMP) {
             throw new IllegalStateException("Already Delivered. Cancel Not Available.");
         }
 
         this.setOrderStatus(OrderStatus.CANCEL);
-        for(OrderItem orderItem : orderItems) {
+        for (OrderItem orderItem : orderItems) {
             orderItem.cancel();
         }
     }
 
     // Inquiry Logic
+
     /**
      * Total Price Info
      */

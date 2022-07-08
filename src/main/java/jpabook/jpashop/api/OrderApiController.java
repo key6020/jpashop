@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -40,13 +41,24 @@ public class OrderApiController {
         return orders.stream().map(OrderDto::new).collect(Collectors.toList());
     }
 
+//    @GetMapping("/api/v3/orders")
+//    // collection fetch join (collection 하나 일 때만 사용. 둘 이상은 X)
+//    // 단점 : paging 불가 HHH000104: firstResult/maxResults specified with collection fetch; applying in memory! <-- Out Of Memory
+//    public List<OrderDto> getOrdersV3() {
+//        List<Order> orders = orderRepository.findAllWithItem();
+//        return orders.stream().map(OrderDto::new).collect(Collectors.toList());
+//    }
+
     @GetMapping("/api/v3/orders")
-    // collection fetch join (collection 하나 일 때만 사용. 둘 이상은 X)
-    // 단점 : paging 불가 HHH000104: firstResult/maxResults specified with collection fetch; applying in memory! <-- Out Of Memory
-    public List<OrderDto> getOrdersV3() {
-        List<Order> orders = orderRepository.findAllWithItem();
+    // collection fetch join + paging available
+    public List<OrderDto> getOrdersV3(@RequestParam(value = "offset", defaultValue = "0") int offset, @RequestParam(value = "limit", defaultValue = "100") int limit) {
+        // XToOne은 fetch join
+        List<Order> orders = orderRepository.findAllWithMemberAndDeliveryAndPaging(offset, limit);
+        // default_batch_fetch_size: 100 <-- in query
         return orders.stream().map(OrderDto::new).collect(Collectors.toList());
     }
+
+//    @GetMapping("/api/v4/orders")
 
     @Data
     static class OrderDto {
